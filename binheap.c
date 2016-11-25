@@ -5,7 +5,12 @@
 *
 *   This program is entirely my own work
 *******************************************************************/
+#include <stddef.h>
+#include <stdlib.h>
 #include "binheap.h"
+#include "node.h"
+#include "cdll.h"
+#include "Fatal.h"
 binheap *newBinHeap(int (*c)(void *,void *)){
     binheap *b;
     cdll *ll;
@@ -73,33 +78,48 @@ void *extractMin(b){
     return y->value;
 }
 
-function consolidate(b){
-    int i; node *temp;
+void consolidate(binheap *b){
+    int i; node *temp; node *spot;
     //create the consolidation array D
     int dsize = log2(b->size) + 1;
     node **d = (node **)malloc(sizeof(node *) * dsize);
-    for(i=0;i < dsize-1;i++)
+    if (d == NULL) Fatal("out of memory\n");
+    for(i=0;i < dsize;i++)
         d[i] = NULL;
     temp = b->rootlist->head;
     do{
+        spot = b->rootlist->head;
+        deleteCdll(b->rootlist,spot);
+        updateConsolidationArray(b,d,spot);
         temp = temp->next;
     }while(temp != b->rootlist->head);
-    calculate D's size: (log (base 2) of b's size) + 1
-    set a variable D to the allocation of an array of D's size
-    initialize the D array to nulls
-    //place all the subheaps in the D array, combining as necessary */
-    while b's root list is not empty{
-        set a variable spot to the head node in b's root list
-        remove spot from the root list (via linked-list remove)
-        update the D array with spot
-    }
-    //transfer the D array back to the heap, keeping track of the extreme value
-    set b's extreme pointer to null
-    for (i = 0; i < D's size; ++i){
-        if D[i] not equal to null{
-            insert D[i] into b's root list (via the linked-list's insert method)
-            update b's extreme pointer if it's null or b's comparator indicates that D[i] is more extreme
+    b->min = NULL;
+    for (i = 0; i < dsize; i++){
+        if (d[i] != NULL){
+            insertCdll(b->rootlist,d[i]);
+            if(b->min == NULL || (b->comparator(b->min->value,d[i]->value) > 0));
+                b->min = d[i];
         }
     }
-    free the D array (if needed)
+}
+void updateConsolidationArray(binheap *b, node **d,node *spot){
+    int degree = spot->children->size;
+    while (d[degree] != NULL){
+        spot = combine(b,spot,d[degree]);
+        d[degree] = NULL;
+        degree++;
+    }
+    d[degree] = spot;
+}
+node *combine(binheap *b,node *x,node *y){
+    if (b->comparator(x,y) < 0){
+        insertCdll(x->children,y);
+        y->parent = x;
+        return x
+    }
+    else {
+        insertCdll(x,y->children);
+        x->parent = y;
+        return y
+    }
 }

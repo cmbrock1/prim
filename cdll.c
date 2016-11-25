@@ -1,5 +1,19 @@
+/*******************************************************************
+*   cdll.c
+*   Cameron Brock
+*   Programming Assignment 3 prim
+*
+*   This program is entirely my own work
+*******************************************************************/
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include "node.h"
+#include "cdll.h"
+#include "Fatal.h"
 void initCdll(cdll *ll){
     ll->head = ll->tail = NULL;
+    ll->size = 0;
 }
 cdll *newCdll(cdll *ll){
     if ((ll = (cdll *)malloc(sizeof(cdll))) == 0)
@@ -13,13 +27,15 @@ bool EmptyCdll(cdll *ll){
     else
         return false;
 }
-void unionCdll(cdll *x, cdll *y)
+void unionCdll(cdll *A, cdll *B)
 {
-    while (y->head != NULL)
-    {
-        pushCdll(x, y->head);
-        popCdll(y);
-    }
+    A->tail->next = B->head;
+    B->head->prev = A->tail;
+    A->tail = B->tail
+    A->size = A->size + B->size;
+    B->head = 0;
+    B->tail = 0;
+    B->size = 0;
     return;
 }
 void pushCdll(cdll *ll,node *n){
@@ -38,28 +54,17 @@ void pushCdll(cdll *ll,node *n){
         ll->tail->next = n;
         ll->head = n;
     }
+    ll->size++;
 }
-void popCdll(cdll *ll){
-    if(ll->head == ll->tail){
-        ll->head = ll->tail = NULL;
+void deleteCdll(cdll *ll,node *n){
+    if(ll->head == n){
+        ll->head = NULL;
         ll->head->prev = NULL;
         ll->head->next = NULL;
-        ll->tail->prev = NULL;
-        ll->tail->next = NULL;
     }
     else{
-        ll->tail->next = ll->head->next;
-        ll->head->next->prev = ll->tail;
-        ll->head = ll->head->next;
+        n->prev->next = n->next;
+        n->next->prev = n->prev;
     }
-}
-
-node *deleteCdll(cdll *ll){
-	if(EmptyCdll(ll))
-        Fatal("Delete Empty Cdll\n");
-	node *temp = ll->head->data;
-	ll->head = ll->head->next;
-	if (ll->head == NULL)
-		ll->tail = NULL;
-	return temp;
+    ll->size--;
 }
