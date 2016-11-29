@@ -8,17 +8,19 @@
 
 #ifndef BINHEAP_H
 #define BINHEAP_H
+#include "cdll.h"
+#include "node.h"
 
-struct typedef binheap{
+typedef struct binheap{
     cdll *rootlist;
     int size;
     node *min;
     int(*comparator)(void *,void *);
+    void(*informer)(void *,void *);
 }binheap;
 
-binheap *newBinHeap(int (*)(void *,void *));
+binheap *newBinHeap(int (*)(void *,void *),void (*)(void *,void *));
 node *insertBinHeap(binheap *,void *);
 node *decreaseKeyBinHeap(binheap *,node *,void *);
-void *extractBinHeap(binheap *);
-
+void *extractMinBinHeap(binheap *);
 #endif // BINHEAP_H

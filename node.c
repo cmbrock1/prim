@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "node.h"
 #include "Fatal.h"
+#include "vertex.h"
 void initNode(node *n,void *val){
     n->next = NULL;
     n->prev = NULL;
@@ -10,9 +11,13 @@ void initNode(node *n,void *val){
     n->children = NULL;
     n->value = val;
 }
-node *newNode(void *value, node *n){
+node *newNode(node *n,void *value){
     if ((n = (node *)malloc(sizeof(node))) == 0)
         Fatal("out of memory\n");
     initNode(n,value);
     return n;
+}
+void displayNode(node *n){
+    vertex *val = (vertex *)n->value;
+    displayVertex(val);
 }

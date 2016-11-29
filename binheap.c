@@ -7,16 +7,21 @@
 *******************************************************************/
 #include <stddef.h>
 #include <stdlib.h>
+#include <math.h>
 #include "binheap.h"
 #include "node.h"
 #include "cdll.h"
 #include "Fatal.h"
-binheap *newBinHeap(int (*c)(void *,void *)){
-    binheap *b;
-    cdll *ll;
-    if(b = malloc(sizeof(binheap)) == 0)
+void consolidate(binheap *);
+void updateConsolidationArray(binheap *, node **,node *);
+node *combine(binheap *,node *,node *);
+binheap *newBinHeap(int (*c)(void *,void *),void (*i)(void *,void *)){
+    binheap *b = NULL;
+    cdll *ll = NULL;
+    if((b = (binheap *)malloc(sizeof(binheap))) == 0)
         Fatal("out of memory\n");
     b->comparator = c;
+    b->informer = i;
     b->rootlist = newCdll(ll);
     b->min = NULL;
     b->size = 0;
@@ -29,19 +34,19 @@ node *bubbleUp(binheap *b, node *n){
         return n;
     //inform the value of n that n's parent is the new owner
     //inform the value of n's parent that n is the new owner
+    b->informer(n->value,n->parent->value);
     void *temp = n->value;
     n->value = n->parent->value;
-    n->parent->value = temp->value;
+    n->parent->value = temp;
     return bubbleUp(b,n->parent);
 }
 node *decreaseKeyBinHeap(binheap *b,node *n,void *nv){
     n->value = nv;
     node *newNode = bubbleUp(b,n);
-    //b->min = extractMin(b);
     return newNode;
 }
 void unionBinheap(binheap *b,binheap *donor){
-    cdll *ll;
+    cdll *ll = NULL;
     unionCdll(b->rootlist,donor->rootlist);
     b->size += donor->size;
     donor->rootlist = newCdll(ll);
@@ -50,8 +55,9 @@ void unionBinheap(binheap *b,binheap *donor){
     consolidate(b);
 }
 node *insertBinHeap(binheap *b,void *val){
-    cdll *ll;
-    node *n = newNode(val,n);
+    cdll *ll = NULL;
+    node *n = NULL;
+    n = newNode(n,val);
     n->parent = n;
     n->children = newCdll(ll);
     insertCdll(b->rootlist,n);
@@ -63,15 +69,15 @@ void deleteBinheap(binheap *b,node *n){
     decreaseKeyBinHeap(b,n,NULL);
     extractMinBinHeap(b);
 }
-void *extractMin(b){
-    node *y = min->b;
-    deleteCdll(b,y);
+void *extractMinBinHeap(binheap *b){
+    node *y = b->min;
+    deleteCdll(b->rootlist,y);
     // the children of y are a linked list
     node *temp = y->children->head;
     do {
         temp->parent = temp;
         temp = temp->next;
-    }while(temp1 != y->children->head);
+    }while(temp != y->children->head);
     unionCdll(b->rootlist,y->children);
     consolidate(b);
     b->size--;
@@ -79,26 +85,25 @@ void *extractMin(b){
 }
 
 void consolidate(binheap *b){
-    int i; node *temp; node *spot;
+    int i; node *spot;
     //create the consolidation array D
     int dsize = log2(b->size) + 1;
     node **d = (node **)malloc(sizeof(node *) * dsize);
     if (d == NULL) Fatal("out of memory\n");
     for(i=0;i < dsize;i++)
         d[i] = NULL;
-    temp = b->rootlist->head;
     do{
         spot = b->rootlist->head;
         deleteCdll(b->rootlist,spot);
         updateConsolidationArray(b,d,spot);
-        temp = temp->next;
-    }while(temp != b->rootlist->head);
+    }while(b->rootlist->head != NULL);
     b->min = NULL;
     for (i = 0; i < dsize; i++){
         if (d[i] != NULL){
             insertCdll(b->rootlist,d[i]);
-            if(b->min == NULL || (b->comparator(b->min->value,d[i]->value) > 0));
+            if((b->min == NULL) || (b->comparator(b->min->value,d[i]->value) > 0)){
                 b->min = d[i];
+            }
         }
     }
 }
@@ -112,14 +117,14 @@ void updateConsolidationArray(binheap *b, node **d,node *spot){
     d[degree] = spot;
 }
 node *combine(binheap *b,node *x,node *y){
-    if (b->comparator(x,y) < 0){
+    if (b->comparator(x->value,y->value) < 0){
         insertCdll(x->children,y);
         y->parent = x;
-        return x
+        return x;
     }
     else {
-        insertCdll(x,y->children);
+        insertCdll(y->children,x);
         x->parent = y;
-        return y
+        return y;
     }
 }

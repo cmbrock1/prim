@@ -10,5 +10,6 @@ typedef struct node{
     void *value;
 }node;
 void initNode(node *n,void *val);
-node *newNode(void *value, node *n);
+node *newNode(node *n,void *value);
+void displayNode(node *n);
 #endif // NODE_H
