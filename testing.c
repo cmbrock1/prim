@@ -174,5 +174,20 @@ int testCdllAndBinheap(){
     printf("Min of Binomial Heap is : ");
     displayNode(b->min);
     printf("\n");
+    printf("Traverse Binheap starting at min\n");
+    node *temp1 = b->min;
+    node *temp2;
+    // do {
+    //     printf("Parent node: ");
+    //     displayNode(temp1);
+    //     printf("\n");
+    //     temp2 = temp1->children->head;
+    //     do{
+    //         printf("Children: ");
+    //         displayNode(temp2);
+    //         printf("\n");
+    //     }while(temp2 == temp1->children->head);
+    //     temp1 = temp1->next;
+    // }while(temp1 == b->min);
     return 0;
 }

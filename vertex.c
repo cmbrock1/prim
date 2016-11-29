@@ -18,6 +18,8 @@ void displayVertex(vertex *v){
 	if(v == NULL)
 		Fatal("Displaying NULL Vertex");
     printf("%d",v->num);
+    if(v->predecessor->num)
+    printf("(%d)",v->predecessornum->num);
 }
 void informer(void *a,void *b){
     vertex *x = (vertex *)a;
@@ -29,5 +31,14 @@ void informer(void *a,void *b){
 int comparator(void *a, void *b){
     vertex *v = (vertex *) a;
     vertex *w = (vertex *) b;
-    return v->num - w->num;
+    if((v->key - w->key) == 0){
+        if(v->predecessor != NULL && w->predecessor != NULL &&
+            (v->predecessor->num - w->predecessor->num) != 0) {
+            return v->predecessor->num - w->predecessor->num;
+        }
+        else
+            return v->num - w->num;
+    }
+    else
+        return v->key - w->key;
 }

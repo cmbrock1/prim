@@ -33,6 +33,7 @@ graph *newGraph(int largestVertexNum){
         Fatal("out of memory\n");
     adjMatrix = newAdjMatrix(largestVertexNum);
     vertArray = newVertexArray(largestVertexNum);
+    g->largestVertexNum = largestVertexNum;
     g->adjMatrix = adjMatrix;
     g->vertArray = vertArray;
     return g;

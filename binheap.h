@@ -22,5 +22,5 @@ typedef struct binheap{
 binheap *newBinHeap(int (*)(void *,void *),void (*)(void *,void *));
 node *insertBinHeap(binheap *,void *);
 node *decreaseKeyBinHeap(binheap *,node *,void *);
-void *extractMinBinHeap(binheap *);
+void *extractBinHeap(binheap *);
 #endif // BINHEAP_H

@@ -43,6 +43,12 @@ node *bubbleUp(binheap *b, node *n){
 node *decreaseKeyBinHeap(binheap *b,node *n,void *nv){
     n->value = nv;
     node *newNode = bubbleUp(b,n);
+    node *temp = b->rootlist->head;
+    do{
+        if((b->comparator(b->min->value,temp->value) > 0))
+            b->min = temp;
+        temp = temp->next;
+    }while(temp != b->rootlist->head);
     return newNode;
 }
 void unionBinheap(binheap *b,binheap *donor){
@@ -67,9 +73,9 @@ node *insertBinHeap(binheap *b,void *val){
 }
 void deleteBinheap(binheap *b,node *n){
     decreaseKeyBinHeap(b,n,NULL);
-    extractMinBinHeap(b);
+    extractBinHeap(b);
 }
-void *extractMinBinHeap(binheap *b){
+void *extractBinHeap(binheap *b){
     node *y = b->min;
     deleteCdll(b->rootlist,y);
     // the children of y are a linked list
