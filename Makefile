@@ -5,12 +5,12 @@
 #   This program is entirely my own work
 CC=gcc
 CFLAGS=-Wall -Wextra -g -std=c99 -c
-OBJECTS=scanner.o node.o Fatal.o vertex.o cdll.o binheap.o graph.o queue.o
+OBJECTS=prim.o scanner.o node.o Fatal.o vertex.o cdll.o binheap.o graph.o queue.o
 
 all: prim
 
-prim: prim.o ${OBJECTS}
-	${CC} -Wall -Wextra -std=c99 -g -o prim prim.o ${OBJECTS} -lm
+prim: ${OBJECTS}
+	${CC} -Wall -Wextra -std=c99 -g -o prim ${OBJECTS} -lm
 
 tester: prim
 	./prim ./graphs/graph1.txt > ./results/res1
@@ -64,3 +64,4 @@ scanner.o: scanner.c scanner.h
 clean:
 	rm ${OBJECTS}
 	if [ -f "prim" ]; then rm prim; fi
+	if [ -d "prim.dSYM" ]; then rm -r prim.dSYM; fi

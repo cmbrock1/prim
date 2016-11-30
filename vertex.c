@@ -12,6 +12,7 @@
 #include <limits.h>
 #include "Fatal.h"
 #include "vertex.h"
+#include "node.h"
 
 vertex *newVertex(vertex *v,int num){
     if ((v = (vertex *)malloc(sizeof(vertex))) == 0)

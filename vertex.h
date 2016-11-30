@@ -7,14 +7,13 @@
 *******************************************************************/
 #ifndef VERTEX_H
 #define VERTEX_H
-#include "node.h"
 #include "cdll.h"
 
 typedef struct vertex{
     int key;
     int num;
     struct vertex *predecessor;
-    node *owner;
+    struct node *owner;
 }vertex;
 
 vertex *newVertex(vertex *v,int num);
