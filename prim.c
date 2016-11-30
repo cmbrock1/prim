@@ -1,7 +1,15 @@
+/*******************************************************************
+*   prim.c
+*   Cameron Brock
+*   Programming Assignment 3 prim
+*
+*   This program is entirely my own work
+*******************************************************************/
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
 #include "cdll.h"
 #include "vertex.h"
 #include "node.h"
@@ -53,12 +61,20 @@ int getLargestVertexNum(FILE *fp){
 void addToGraph(graph *g,int firstNum,int secondNum,int weight){
     vertex *firstVertex = NULL;
     vertex *secondVertex = NULL;
-    firstVertex = newVertex(firstVertex,firstNum);
-    secondVertex = newVertex(secondVertex,secondNum);
-    g->vertArray[firstNum] = firstVertex;
-    g->vertArray[secondNum] = secondVertex;
-    g->adjMatrix[firstNum][secondNum] = weight;
-    g->adjMatrix[secondNum][firstNum] = weight;
+    if (g->vertArray[firstNum] == NULL) {
+        firstVertex = newVertex(firstVertex,firstNum);
+        g->vertArray[firstNum] = firstVertex;
+    }
+    if (g->vertArray[secondNum] == NULL) {
+        secondVertex = newVertex(secondVertex,secondNum);
+        g->vertArray[secondNum] = secondVertex;
+    }
+    if (g->adjMatrix[firstNum][secondNum] == INT_MAX) {
+        g->adjMatrix[firstNum][secondNum] = weight;
+    }
+    if (g->adjMatrix[secondNum][firstNum] == INT_MAX) {
+        g->adjMatrix[secondNum][firstNum] = weight;
+    }
 }
 void processCorpus(graph *g,FILE *fp){
     char *token = NULL;
@@ -83,7 +99,6 @@ void processCorpus(graph *g,FILE *fp){
     if(token == NULL) addToGraph(g,firstNum,secondNum,weight);
     while(token != NULL){
         addToGraph(g,firstNum,secondNum,weight);
-        token = readToken(fp);
         if(token == NULL) Fatal("Invalid Input");
         firstNum = atoi(token);
         token = readToken(fp);
@@ -101,26 +116,19 @@ void processCorpus(graph *g,FILE *fp){
             token = readToken(fp);
         }
     }
+    addToGraph(g,firstNum,secondNum,weight);
 }
 void prim(graph *g){
     binheap *b = newBinHeap(comparator,informer);
     int i = 0;
     vertex *u;
-    while(i < (g->largestVertexNum+1)){
-        if(g->vertArray[i] != NULL) break;
-        i++;
-    }
-    g->vertArray[i]->key = 0;
     for(i = 0;i < (g->largestVertexNum+1);i++){
         if(g->vertArray[i] != NULL)
             g->vertArray[i]->owner = insertBinHeap(b,g->vertArray[i]);
     }
     while(b->size != 0){
-    	if(b->min == NULL && b->size != 0)
-    	                    	   Fatal("PrimERROR");
         u = (vertex *)extractBinHeap(b);
-        if(b->min == NULL && b->size != 0)
-                    	   Fatal("PrimERROR");
+        u->owner = 0;
         for(i=0;i<(g->largestVertexNum+1);i++){
             if(g->vertArray[i] != NULL && g->vertArray[i]->owner != NULL &&
                g->adjMatrix[u->num][i] < g->vertArray[i]->key){
@@ -150,7 +158,7 @@ void printTree(vertex *v,graph *g){
             while(b->size != 0){
                 temp = extractBinHeap(b);
                 displayVertex(temp,temp->key);
-                if(b->size == 0) printf(",");
+                if(b->size > 0) printf(",");
             }
             if (level > 0)
                 printf(";\n");
@@ -176,7 +184,7 @@ void printTree(vertex *v,graph *g){
     while(b->size != 0){
         temp = extractBinHeap(b);
         displayVertex(temp,temp->key);
-        if(b->size == 0) printf(",");
+        if(b->size > 0) printf(",");
     }
     printf(";\nweight: %d\n",weight);
 }

@@ -5,7 +5,6 @@
 *
 *   This program is entirely my own work
 *******************************************************************/
-
 #ifndef GRAPH_H
 #define GRAPH_H
 
@@ -14,5 +13,7 @@ typedef struct graph{
     struct vertex **vertArray;
     int largestVertexNum;
 }graph;
+
 graph *newGraph(int numNodes);
+
 #endif // GRAPH_H

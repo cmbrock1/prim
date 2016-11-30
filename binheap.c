@@ -16,6 +16,7 @@
 void consolidate(binheap *);
 void updateConsolidationArray(binheap *, node **,node *);
 node *combine(binheap *,node *,node *);
+
 binheap *newBinHeap(int (*c)(void *,void *),void (*i)(void *,void *)){
     binheap *b = NULL;
     cdll *ll = NULL;
@@ -55,15 +56,6 @@ node *decreaseKeyBinHeap(binheap *b,node *n,void *nv){
     }
     return newNode;
 }
-void unionBinheap(binheap *b,binheap *donor){
-    cdll *ll = NULL;
-    unionCdll(b->rootlist,donor->rootlist);
-    b->size += donor->size;
-    donor->rootlist = newCdll(ll);
-    donor->size = 0;
-    donor->min = NULL;
-    consolidate(b);
-}
 node *insertBinHeap(binheap *b,void *val){
     cdll *ll = NULL;
     node *n = NULL;
@@ -74,10 +66,6 @@ node *insertBinHeap(binheap *b,void *val){
     b->size++;
     consolidate(b);
     return n;
-}
-void deleteBinheap(binheap *b,node *n){
-    decreaseKeyBinHeap(b,n,NULL);
-    extractBinHeap(b);
 }
 void *extractBinHeap(binheap *b){
     int i;

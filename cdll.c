@@ -12,6 +12,7 @@
 #include "node.h"
 #include "cdll.h"
 #include "Fatal.h"
+
 void initCdll(cdll *ll){
     ll->head = NULL;
     ll->size = 0;
@@ -21,12 +22,6 @@ cdll *newCdll(cdll *ll){
         Fatal("out of memory\n");
     initCdll(ll);
     return ll;
-}
-bool EmptyCdll(cdll *ll){
-    if(ll->head == NULL)
-        return true;
-    else
-        return false;
 }
 void unionCdll(cdll *A, cdll *B)
 {

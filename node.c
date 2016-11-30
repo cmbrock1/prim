@@ -1,9 +1,17 @@
+/*******************************************************************
+*   node.c
+*   Cameron Brock
+*   Programming Assignment 3 prim
+*
+*   This program is entirely my own work
+*******************************************************************/
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include "node.h"
 #include "Fatal.h"
 #include "vertex.h"
+
 void initNode(node *n,void *val){
     n->next = NULL;
     n->prev = NULL;

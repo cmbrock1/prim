@@ -6,19 +6,33 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -g -std=c99 -c
 OBJECTS=scanner.o node.o Fatal.o vertex.o cdll.o binheap.o graph.o queue.o
-TESTOBJECTS=scanner.o node.o Fatal.o vertex.o cdll.o binheap.o graph.o
 
 all: prim
 
 prim: prim.o ${OBJECTS}
 	${CC} -Wall -Wextra -std=c99 -g -o prim prim.o ${OBJECTS} -lm
 
-test: prim.o testing.o ${TESTOBJECTS}
-	${CC} -Wall -Wextra -std=c99 -g -o testing testing.o ${TESTOBJECTS} -lm
-	./testing data1
-
-testing.o: testing.c cdll.h vertex.h node.h binheap.h scanner.h graph.h Fatal.h
-	${CC} ${CFLAGS} testing.c
+tester: prim
+	./prim ./graphs/graph1.txt > ./results/res1
+	./prim ./graphs/graph2.txt > ./results/res2
+	./prim ./graphs/graph3.txt > ./results/res3
+	./prim ./graphs/graph4.txt > ./results/res4
+	./prim ./graphs/graph5.txt > ./results/res5
+	./prim ./graphs/graph6.txt > ./results/res6
+	./prim ./graphs/graph7.txt > ./results/res7
+	./prim ./graphs/graph8.txt > ./results/res8
+	./prim ./graphs/graph9.txt > ./results/res9
+	./prim ./graphs/graph10.txt > ./results/res10
+	diff ./outputs/output1.txt ./results/res1
+	diff ./outputs/output2.txt ./results/res2
+	diff ./outputs/output3.txt ./results/res3
+	diff ./outputs/output4.txt ./results/res4
+	diff ./outputs/output5.txt ./results/res5
+	diff ./outputs/output6.txt ./results/res6
+	diff ./outputs/output7.txt ./results/res7
+	diff ./outputs/output8.txt ./results/res8
+	diff ./outputs/output9.txt ./results/res9
+	diff ./outputs/output10.txt ./results/res10
 
 vertex.o: vertex.c vertex.h Fatal.h node.h
 	${CC} ${CFLAGS} vertex.c
@@ -32,7 +46,7 @@ node.o: node.c node.h Fatal.h vertex.h
 cdll.o: cdll.c cdll.h Fatal.h node.h
 	${CC} ${CFLAGS} cdll.c
 
-binheap.o: binheap.c binheap.h node.h Fatal.h cdll.h
+binheap.o: binheap.c binheap.h node.h cdll.h Fatal.h
 	${CC} ${CFLAGS} binheap.c
 
 graph.o: graph.c graph.h vertex.h Fatal.h
@@ -49,5 +63,4 @@ scanner.o: scanner.c scanner.h
 
 clean:
 	rm ${OBJECTS}
-	if [ -f "testing" ]; then rm testing; fi
 	if [ -f "prim" ]; then rm prim; fi

@@ -5,7 +5,6 @@
 *
 *   This program is entirely my own work
 *******************************************************************/
-
 #ifndef BINHEAP_H
 #define BINHEAP_H
 #include "cdll.h"
@@ -23,4 +22,5 @@ binheap *newBinHeap(int (*)(void *,void *),void (*)(void *,void *));
 node *insertBinHeap(binheap *,void *);
 node *decreaseKeyBinHeap(binheap *,node *,void *);
 void *extractBinHeap(binheap *);
+
 #endif // BINHEAP_H

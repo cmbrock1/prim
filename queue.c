@@ -1,7 +1,7 @@
 /*******************************************************************
 *   queue.c
 *   Cameron Brock
-*   Programming Assignment 2 trees
+*   Programming Assignment 3 prim
 *
 *   This program is entirely my own work
 *******************************************************************/

@@ -5,12 +5,12 @@
 *
 *   This program is entirely my own work
 *******************************************************************/
-
 #include <limits.h>
 #include <stdlib.h>
 #include "vertex.h"
 #include "graph.h"
 #include "Fatal.h"
+
 int **newAdjMatrix(int largestVertexNum){
     int **arr; int i,j;
     if((arr = (int **)malloc((largestVertexNum+1) * sizeof(int *))) == 0)

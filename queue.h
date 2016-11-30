@@ -1,7 +1,7 @@
 /*******************************************************************
 *   queue.h
 *   Cameron Brock
-*   Programming Assignment 2 trees
+*   Programming Assignment 3 prim
 *
 *   This program is entirely my own work
 *******************************************************************/
@@ -9,17 +9,18 @@
 #define QUEUE_H
 #include "node.h"
 #include "vertex.h"
+
 typedef struct queue{
     node *head;
     node *tail;
 }queue;
 
-extern queue *newQueue();
-extern int EmptyQueue(queue *q);
-extern int FullQueue(queue *q);
-extern void Enqueue(queue *q,vertex *v);
-extern vertex *Dequeue(queue *q);
-extern void DestroyQueue(queue *q);
-extern void printQueue(queue *q,FILE *fp);
-extern int queueSize(queue *q);
+queue *newQueue();
+int EmptyQueue(queue *q);
+int FullQueue(queue *q);
+void Enqueue(queue *q,vertex *v);
+vertex *Dequeue(queue *q);
+void DestroyQueue(queue *q);
+void printQueue(queue *q,FILE *fp);
+
 #endif // QUEUE_H

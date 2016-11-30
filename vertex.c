@@ -1,3 +1,10 @@
+/*******************************************************************
+*   vertex.c
+*   Cameron Brock
+*   Programming Assignment 3 prim
+*
+*   This program is entirely my own work
+*******************************************************************/
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -5,6 +12,7 @@
 #include <limits.h>
 #include "Fatal.h"
 #include "vertex.h"
+
 vertex *newVertex(vertex *v,int num){
     if ((v = (vertex *)malloc(sizeof(vertex))) == 0)
         Fatal("out of memory\n");
