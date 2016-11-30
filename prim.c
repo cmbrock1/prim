@@ -14,40 +14,27 @@
 int getLargestVertexNum(FILE *fp);
 void addToGraph(graph *g,int firstNum,int secondNum,int weight);
 void processCorpus(graph *g,FILE *fp);
-void printSubTree(vertex *v,int **adjMatrix);
+void printTree(vertex *v,graph *g);
 void printSpanningForest(graph *g);
+void prim(graph *g);
 
 int main(int argc,char **argv){
     //int i,j;
+    if(argc != 2)
+        Fatal("Too few arguments");
     FILE *corpus = fopen(argv[1], "r");
     if(corpus == NULL)
         Fatal("Failed to open %s",argv[1]);
     int largestVertexNum = getLargestVertexNum(corpus);
     if(fclose(corpus) != 0)
         Fatal("Failed to close %s",argv[1]);
-    //printf("largestVertexNum = %d\n",largestVertexNum);
     corpus = fopen(argv[1], "r");
     if(corpus == NULL)
         Fatal("Failed to open %s",argv[1]);
     graph *g = newGraph(largestVertexNum);
     processCorpus(g,corpus);
-    // for(i=0;i<largestVertexNum + 1;i++){
-    //     printf("g->vertArray[%d] = ",i);
-    //     if(g->vertArray[i] != NULL)
-    //         displayVertex(g->vertArray[i]);
-    //     else
-    //         printf("NULL");
-    //    printf("\n");
-    // }
-    // for(i=0;i<largestVertexNum + 1;i++){
-    //     for(j=0;j<largestVertexNum + 1;j++){
-    //     //if(g->adjMatrix[i][j] != NULL){
-    //         printf("g->adjMatrix[%d][%d] = ",i,j);
-    //         printf("%d",g->adjMatrix[i][j]);
-    //         printf("\n");
-    //     //}
-    //     }
-    // }
+    prim(g);
+    printSpanningForest(g);
     if(fclose(corpus) != 0)
         Fatal("Failed to close %s",argv[1]);
     return 0;
@@ -115,7 +102,6 @@ void processCorpus(graph *g,FILE *fp){
         }
     }
 }
-
 void prim(graph *g){
     binheap *b = newBinHeap(comparator,informer);
     int i = 0;
@@ -130,7 +116,11 @@ void prim(graph *g){
             g->vertArray[i]->owner = insertBinHeap(b,g->vertArray[i]);
     }
     while(b->size != 0){
+    	if(b->min == NULL && b->size != 0)
+    	                    	   Fatal("PrimERROR");
         u = (vertex *)extractBinHeap(b);
+        if(b->min == NULL && b->size != 0)
+                    	   Fatal("PrimERROR");
         for(i=0;i<(g->largestVertexNum+1);i++){
             if(g->vertArray[i] != NULL && g->vertArray[i]->owner != NULL &&
                g->adjMatrix[u->num][i] < g->vertArray[i]->key){
@@ -142,41 +132,51 @@ void prim(graph *g){
     }
 
 }
-
 void printSpanningForest(graph *g){
     int i;
     for(i=0;i<(g->largestVertexNum+1);i++)
         if(g->vertArray[i] != NULL && g->vertArray[i]->predecessor == NULL)
-            printTree(g->vertArray[i],g->adjMatrix);
+            printTree(g->vertArray[i],g);
 }
-void printTree(vertex *v,int **adjMatrix){
-    bool printlevel = true;
-    bool newlevel = false;
+void printTree(vertex *v,graph *g){
+    bool newlevel = true; int i; int level = 0; int weight = 0;
     queue *q = newQueue();
-    binheap *b = newBinHeap(comparator,informer);
-    node *temp = newQNode(v);
-    Enqueue(q,temp);
+    binheap *b = newBinHeap(numComparator,informer);
+    vertex *temp;
+    Enqueue(q,v);
     Enqueue(q,NULL);
-    int level = 0;
     while(q->head != NULL){
-        if(printlevel == true){
+        if(newlevel){
+            while(b->size != 0){
+                temp = extractBinHeap(b);
+                displayVertex(temp,temp->key);
+                if(b->size == 0) printf(",");
+            }
             if (level > 0)
-                fprintf(fp,";\n");
-            fprintf(fp,"%d : ",level);
-            printlevel = false;
+                printf(";\n");
+            printf("%d :",level);
+            newlevel = false;
         }
         temp = Dequeue(q);
         if(temp == NULL){
             level++;
-            printlevel = true;
+            newlevel = true;
             if (q->head != NULL)
                 Enqueue(q,NULL);
         }
         else {
-		    insertBinHeap(temp->data);
-		    if(temp != v)
-                Enqueue(q,temp->next);
+		    insertBinHeap(b,temp);
+		    if(temp->predecessor != NULL)
+                weight += temp->key;
+            for(i=0;i<(g->largestVertexNum+1);i++)
+                if(g->vertArray[i] != NULL && g->vertArray[i]->predecessor == temp)
+                    Enqueue(q,g->vertArray[i]);
         }
     }
-    fprintf(fp,"\n");
+    while(b->size != 0){
+        temp = extractBinHeap(b);
+        displayVertex(temp,temp->key);
+        if(b->size == 0) printf(",");
+    }
+    printf(";\nweight: %d\n",weight);
 }

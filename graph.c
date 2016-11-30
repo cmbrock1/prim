@@ -1,3 +1,11 @@
+/*******************************************************************
+*   graph.c
+*   Cameron Brock
+*   Programming Assignment 3 prim
+*
+*   This program is entirely my own work
+*******************************************************************/
+
 #include <limits.h>
 #include <stdlib.h>
 #include "vertex.h"

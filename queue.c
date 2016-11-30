@@ -11,21 +11,10 @@
 #include "queue.h"
 #include "node.h"
 #include "Fatal.h"
+#include "vertex.h"
 
 void initQueue(queue *q){
     q->head = q->tail = NULL;
-}
-void initQNode(qNode *n){
-    n->data = NULL;
-    n->next = NULL;
-}
-qNode *newQNode(vertex *data){
-    qNode *n;
-    if ((n = (qNode *)malloc(sizeof(qNode))) == 0)
-        Fatal("out of memory\n");
-    initQNode(n);
-    n->data = data;
-    return n;
 }
 queue *newQueue(void){
     queue *q;
@@ -40,28 +29,26 @@ int EmptyQueue(queue *q){
     else
         return false;
 }
-int FullQueue(queue *q){
-    return false;
-}
-void Enqueue(queue *q,node *n)
+
+void Enqueue(queue *q,vertex *v)
     {
     if (q->head == NULL && q->tail == NULL)
         {
-        q->head = newQNode(n);
+        q->head = newNode(q->head,v);
         q->tail = q->head;
         }
     else
         {
-        q->tail->next = newQNode(n);
+        q->tail->next = newNode(q->tail->next,v);
         q->tail = q->tail->next;
         }
     }
 
-node *Dequeue(queue *q)
+vertex *Dequeue(queue *q)
     {
     	if(EmptyQueue(q))
             Fatal("Dequeue Empty Queue\n");
-    	node *temp = q->head->data;
+    	vertex *temp = (vertex *)q->head->value;
     	q->head = q->head->next;
     	if (q->head == NULL)
     		q->tail = NULL;

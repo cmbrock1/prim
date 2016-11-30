@@ -14,12 +14,14 @@ vertex *newVertex(vertex *v,int num){
     v->owner = NULL;
     return v;
 }
-void displayVertex(vertex *v){
+void displayVertex(vertex *v,int weight){
 	if(v == NULL)
 		Fatal("Displaying NULL Vertex");
-    printf("%d",v->num);
-    if(v->predecessor->num)
-    printf("(%d)",v->predecessornum->num);
+    printf(" %d",v->num);
+    if(v->predecessor != NULL){
+        printf("(%d)",v->predecessor->num);
+        printf("%d",weight);
+    }
 }
 void informer(void *a,void *b){
     vertex *x = (vertex *)a;
@@ -27,6 +29,11 @@ void informer(void *a,void *b){
     node *temp = x->owner;
     x->owner = y->owner;
     y->owner = temp;
+}
+int numComparator(void *a, void *b){
+    vertex *v = (vertex *) a;
+    vertex *w = (vertex *) b;
+    return v->num - w->num;
 }
 int comparator(void *a, void *b){
     vertex *v = (vertex *) a;

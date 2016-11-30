@@ -12,6 +12,7 @@
 #include "node.h"
 #include "cdll.h"
 #include "Fatal.h"
+
 void consolidate(binheap *);
 void updateConsolidationArray(binheap *, node **,node *);
 node *combine(binheap *,node *,node *);
@@ -41,14 +42,17 @@ node *bubbleUp(binheap *b, node *n){
     return bubbleUp(b,n->parent);
 }
 node *decreaseKeyBinHeap(binheap *b,node *n,void *nv){
+	int i;
     n->value = nv;
     node *newNode = bubbleUp(b,n);
     node *temp = b->rootlist->head;
-    do{
-        if((b->comparator(b->min->value,temp->value) > 0))
+    for (i = 0; i < b->rootlist->size; i++){
+        if((b->comparator(b->min->value,temp->value) > 0)){
             b->min = temp;
+            if(b->min == NULL) Fatal("DecreaseKeyERROR");
+        }
         temp = temp->next;
-    }while(temp != b->rootlist->head);
+    }
     return newNode;
 }
 void unionBinheap(binheap *b,binheap *donor){
@@ -76,14 +80,19 @@ void deleteBinheap(binheap *b,node *n){
     extractBinHeap(b);
 }
 void *extractBinHeap(binheap *b){
+    int i;
+	if(b->size == 0)
+		Fatal("Extract from empty binheap");
+	else if(b->min == NULL && b->size != 0)
+		Fatal("Invalid Condition in extractBinheap");
     node *y = b->min;
     deleteCdll(b->rootlist,y);
     // the children of y are a linked list
     node *temp = y->children->head;
-    do {
+    for (i = 0; i < y->children->size; i++){
         temp->parent = temp;
         temp = temp->next;
-    }while(temp != y->children->head);
+    }
     unionCdll(b->rootlist,y->children);
     consolidate(b);
     b->size--;
@@ -98,11 +107,11 @@ void consolidate(binheap *b){
     if (d == NULL) Fatal("out of memory\n");
     for(i=0;i < dsize;i++)
         d[i] = NULL;
-    do{
+    while(b->rootlist->size > 0){
         spot = b->rootlist->head;
         deleteCdll(b->rootlist,spot);
         updateConsolidationArray(b,d,spot);
-    }while(b->rootlist->head != NULL);
+    }
     b->min = NULL;
     for (i = 0; i < dsize; i++){
         if (d[i] != NULL){

@@ -19,5 +19,5 @@ node *newNode(node *n,void *value){
 }
 void displayNode(node *n){
     vertex *val = (vertex *)n->value;
-    displayVertex(val);
+    displayVertex(val,0);
 }

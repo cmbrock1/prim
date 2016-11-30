@@ -30,6 +30,17 @@ bool EmptyCdll(cdll *ll){
 }
 void unionCdll(cdll *A, cdll *B)
 {
+    if(B->size == 0)
+        return;
+    if(A->size == 0)
+        A->head = B->head;
+    else{
+        node *temp = B->head->prev;
+        B->head->prev->next = A->head;
+        B->head->prev = A->head->prev;
+        A->head->prev->next = B->head;
+        A->head->prev = temp;
+    }
     A->head->prev->next = B->head;
     B->head->prev = A->head->prev;
     A->head->prev = B->head->prev;
